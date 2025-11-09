@@ -44,6 +44,22 @@ app.get("/", (req, res) => {
   res.send("FinEase Server is running.....");
 });
 
+//* -----------ADD TRANSACTION (POST)-----------
+app.post("/add-transaction", async (req, res) => {
+  const transaction = req.body;
+
+  try {
+    const db = client.db("fin_ease");
+    const collection = db.collection("transactions");
+    const result = await collection.insertOne(transaction);
+      res.send(result);
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Failed to add transaction" });
+  }
+})
+
 //* START SERVER
 app.listen(port, () => {
   console.log(`FinEase Server is running on port: ${port}`);
