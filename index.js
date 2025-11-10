@@ -63,10 +63,11 @@ app.post("/add-transaction", async (req, res) => {
 //* -----------GET ALL TRANSACTION FROM DB (GET)-----------
 app.get("/my-transactions", async (req, res) => {
   try {
+    const email = req.query.email;
     const db = client.db("fin_ease");
     const collection = db.collection("transactions")
-    const transactions = await collection.find().toArray()
-    res.send(transactions)
+    const result = await collection.find({ userEmail: email }).toArray();
+    res.send(result)
   }
   catch (error) {
     res.status(500).send({ message: "Failed to fetch transactions" });
