@@ -52,7 +52,7 @@ app.post("/add-transaction", async (req, res) => {
     const db = client.db("fin_ease");
     const collection = db.collection("transactions");
     const result = await collection.insertOne(transaction);
-      res.send(result);
+    res.send(result);
   }
   catch (error) {
     console.error(error);
