@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 dotenv.config();
 
@@ -52,7 +52,7 @@ app.post("/add-transaction", async (req, res) => {
     const db = client.db("fin_ease");
     const collection = db.collection("transactions");
     const result = await collection.insertOne(transaction);
-    res.send(result);
+      res.send(result);
   }
   catch (error) {
     console.error(error);
@@ -60,14 +60,33 @@ app.post("/add-transaction", async (req, res) => {
   }
 })
 
+//* -----------GET TRANSACTION DATA BY ID FROM DB (GET)-----------
+app.get("/my-transactions/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const db = client.db("fin_ease");
+    const collection = db.collection("transactions");
+    const result = await collection.findOne({_id: new ObjectId(id)});
+
+    if(!result) {
+      console.error(error);
+    res.status(500).send({ message: "Failed to fetch transaction data by id" });
+  }
+  res.send(result);
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Failed to fetch transaction data by id" });
+  }
+})
+
 //* -----------GET ALL TRANSACTION FROM DB (GET)-----------
 app.get("/my-transactions", async (req, res) => {
   try {
-    const email = req.query.email;
     const db = client.db("fin_ease");
     const collection = db.collection("transactions")
-    const result = await collection.find({ userEmail: email }).toArray();
-    res.send(result)
+    const transactions = await collection.find().toArray()
+    res.send(transactions)
   }
   catch (error) {
     res.status(500).send({ message: "Failed to fetch transactions" });
