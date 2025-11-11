@@ -40,7 +40,10 @@ async function run() {
 
     //* -----------ADD TRANSACTION (POST)-----------
     app.post("/add-transaction", async (req, res) => {
-      const transaction = req.body;
+      const transaction = {
+        ...req.body,
+        createdAt: new Date(),
+      };
       try {
         const result = await collection.insertOne(transaction);
         res.send(result);
@@ -66,7 +69,9 @@ async function run() {
     //* -----------GET ALL TRANSACTION FROM DB (GET)-----------
     app.get("/my-transactions", async (req, res) => {
       try {
-        const transactions = await collection.find().toArray();
+        const sortBy = req.query.sortBy || "createdAt";   // default sort field
+    const order = req.query.order === "asc" ? 1 : -1; // default descending
+    const transactions = await collection.find().sort({ [sortBy]: order }).toArray();
         res.send(transactions);
       }
       catch (error) {
