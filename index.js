@@ -56,12 +56,6 @@ async function run() {
       try {
         const id = req.params.id;
         const result = await collection.findOne({ _id: new ObjectId(id) });
-
-        if (!result) {
-          console.error("Transaction not found");
-          return res.status(500).send({ message: "Failed to fetch transaction data by id" });
-        }
-
         res.send(result);
       } catch (error) {
         console.error(error);
@@ -86,16 +80,32 @@ async function run() {
       try {
         const id = req.params.id;
         const result = await collection.deleteOne({ _id: new ObjectId(id) });
-        if (result.deletedCount === 0) {
-          return res.status(404).send({ message: "Transaction not found" });
-        }
-        res.send({ message: "Transaction deleted successfully" });
+        res.send(result);
       }
       catch (error) {
         console.error(error);
         res.status(500).send({ message: "Failed to delete transaction" });
       }
     })
+
+    //* -----------UPDATE TRANSACTION (PUT)-----------
+    app.put("/update-transaction/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        delete updatedData._id;
+
+        const result = await collection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: updatedData }
+        );
+
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to update transaction" });
+      }
+    });
 
   }
   finally {
